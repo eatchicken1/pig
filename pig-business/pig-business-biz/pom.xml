@@ -22,11 +22,6 @@
             <artifactId>pig-business-api</artifactId>
 			<version>${revision}</version>
         </dependency>
-		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
-			<scope>runtime</scope> <!-- 运行时依赖，避免编译冲突 -->
-		</dependency>
 		<!--文件管理-->
 		<dependency>
 			<groupId>com.pig4cloud</groupId>

@@ -20,7 +20,7 @@ spring:
     # MySQL 8.x 驱动类
     driver-class-name: com.mysql.cj.jdbc.Driver
     # 数据库连接 URL（替换为你的数据库地址/库名，Pig 框架默认库名 pig）
-    url: jdbc:mysql://localhost:3306/pig?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://localhost:3306/pig_business?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
     # 数据库账号密码（替换为你的实际账号）
     username: root
     password: root
