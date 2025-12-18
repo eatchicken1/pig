@@ -33,6 +33,27 @@ spring:
       pool-name: BusinessHikariCP
       max-lifetime: 60000
       connection-timeout: 30000
+  ai:
+    openai:
+      # 替换为您的 API Key (OpenAI / DeepSeek / 通义千问等)
+      api-key: sk-xxxxxxxxxxxxxxxxxxxxxxxx
+      # 如果使用 DeepSeek 或国内中转，需要修改 base-url
+      base-url: https://api.openai.com
+      chat:
+        options:
+          # 模型名称 (gpt-3.5-turbo / deepseek-chat)
+          model: gpt-3.5-turbo
+          temperature: 0.7
+    vectorstore:
+      redis:
+        # Redis 连接地址 (注意修改为你的 Redis 地址)
+        uri: redis://:${spring.data.redis.password}@${spring.data.redis.host}:${spring.data.redis.port}
+        # 向量索引名称
+        index: frequency-index
+        # 向量字段前缀
+        prefix: "embedding:"
+        # 即使数据为空也初始化 (开发阶段设为 true)
+        initialize-schema: true
 
 mybatis-plus:
   mapper-locations: classpath:/mybatis/mapper/**/*.xml

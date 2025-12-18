@@ -46,6 +46,7 @@
 		<spring.checkstyle.plugin>0.0.47</spring.checkstyle.plugin>
 		<flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring-ai.version>1.0.0-M6</spring-ai.version>
 	</properties>
 
 	<!-- 定义全局jar版本,模块使用需要再次引入但不用写版本号 -->
@@ -226,6 +227,14 @@
 				<groupId>cn.hutool</groupId>
 				<artifactId>hutool-bom</artifactId>
 				<version>${hutool.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- spring ai bom -->
+			<dependency>
+				<groupId>org.springframework.ai</groupId>
+				<artifactId>spring-ai-bom</artifactId>
+				<version>${spring-ai.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

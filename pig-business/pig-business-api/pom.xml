@@ -26,6 +26,12 @@
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 
+		<!--mybatis 依赖-->
+		<dependency>
+			<groupId>com.pig4cloud</groupId>
+			<artifactId>pig-common-mybatis</artifactId>
+		</dependency>
+
 		<!-- 数据校验依赖（DTO 校验用，如 @NotBlank、@NotNull） -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

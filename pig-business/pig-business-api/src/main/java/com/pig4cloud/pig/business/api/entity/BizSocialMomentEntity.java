@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import com.pig4cloud.pig.business.common.core.util.TenantTable;
 import java.time.LocalDateTime;
 
 /**
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
  * @date 2025-12-18 14:58:29
  */
 @Data
-@TenantTable
 @TableName("biz_social_moment")
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "社交动态胶囊表")
