@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -130,4 +131,12 @@ public class BizKnowledgeBaseController {
     public R importExcel(@RequestExcel List<BizKnowledgeBaseEntity> bizKnowledgeBaseList, BindingResult bindingResult) {
         return R.ok(bizKnowledgeBaseService.saveBatch(bizKnowledgeBaseList));
     }
+
+	@PostMapping("/train")
+	@Operation(summary = "投喂文档进行 AI 训练")
+	@HasPermission("admin_bizKnowledgeBase_train")
+	public R<String> train(@RequestParam("file") MultipartFile file, @RequestParam("echoId") Long echoId) {
+		bizKnowledgeBaseService.uploadAndTrain(file, echoId);
+		return R.ok("文件已接收，Echo 正在闭关修炼中...");
+	}
 }

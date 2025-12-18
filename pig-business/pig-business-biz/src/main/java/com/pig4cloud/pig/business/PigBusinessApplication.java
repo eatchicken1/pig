@@ -6,10 +6,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnablePigResourceServer
 @EnablePigDoc(value = "admin", isMicro = false)
+@EnableAsync
 public class PigBusinessApplication {
 	private static final Logger LOGGER = LogManager.getLogger(PigBusinessApplication.class);
     public static void main(String[] args) {
