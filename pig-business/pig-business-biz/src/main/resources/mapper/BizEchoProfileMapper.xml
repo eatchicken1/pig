@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.business.admin.mapper.BizEchoProfileMapper">
+
+  <resultMap id="bizEchoProfileMap" type="com.pig4cloud.pig.business.api.entity.BizEchoProfileEntity">
+        <id property="echoId" column="echo_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="avatar" column="avatar"/>
+        <result property="personalityPrompt" column="personality_prompt"/>
+        <result property="voiceTone" column="voice_tone"/>
+        <result property="isPublic" column="is_public"/>
+        <result property="heat" column="heat"/>
+        <result property="tags" column="tags"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="tenantId" column="tenant_id"/>
+  </resultMap>
+</mapper>

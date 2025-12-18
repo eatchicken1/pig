@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pig.business.admin.mapper.BizChatHistoryMapper">
+
+  <resultMap id="bizChatHistoryMap" type="com.pig4cloud.pig.business.api.entity.BizChatHistoryEntity">
+        <id property="id" column="id"/>
+        <result property="sessionId" column="session_id"/>
+        <result property="senderId" column="sender_id"/>
+        <result property="receiverId" column="receiver_id"/>
+        <result property="content" column="content"/>
+        <result property="role" column="role"/>
+        <result property="isAiGenerated" column="is_ai_generated"/>
+        <result property="createTime" column="create_time"/>
+        <result property="tenantId" column="tenant_id"/>
+  </resultMap>
+</mapper>
