@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.pig4cloud.pig.business.admin.mapper.BizFriendshipMapper">
+<mapper namespace="com.pig4cloud.pig.biz.mapper.BizFriendshipMapper">
 
-  <resultMap id="bizFriendshipMap" type="com.pig4cloud.pig.business.api.entity.BizFriendshipEntity">
+  <resultMap id="bizFriendshipMap" type="com.pig4cloud.pig.biz.entity.BizFriendshipEntity">
         <id property="id" column="id"/>
         <result property="userId" column="user_id"/>
         <result property="friendId" column="friend_id"/>
