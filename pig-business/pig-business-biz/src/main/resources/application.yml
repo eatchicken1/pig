@@ -33,24 +33,26 @@ spring:
       pool-name: BusinessHikariCP
       max-lifetime: 60000
       connection-timeout: 30000
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password:
   ai:
     openai:
-      # 替换为您的 API Key (OpenAI / DeepSeek / 通义千问等)
-      api-key: sk-d5af18f148a34ffd9c1a7f608b646190
-      # 如果使用 DeepSeek 或国内中转，需要修改 base-url
-      base-url: https://api.deepseek.com
+      api-key: ${QWEN_API_KEY}
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
       chat:
         options:
-          # 模型名称 (gpt-3.5-turbo / deepseek-chat)
-          model: deepseek-reasoner
+          model: qwen-plus
           temperature: 0.7
+      embedding:
+        options:
+          model: text-embedding-v1
     vectorstore:
       redis:
-        # 必须：向量索引名称（你可以自定义）
         index: frequency_idx
-        # 必须：向量字段前缀
         prefix: "freq:emb:"
-        # 即使数据为空也初始化 (开发阶段设为 true)
         initialize-schema: true
 
 mybatis-plus:
@@ -62,4 +64,4 @@ mybatis-plus:
 # 日志配置
 logging:
   level:
-    com.pig4cloud.pig.business.mapper: debug
+    com.pig4cloud.pig.business.mapper: info

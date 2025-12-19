@@ -18,3 +18,12 @@ spring:
       - nacos:${spring.application.name}-@profiles.active@.yml
 
 
+file:
+  bucket-name: pig-frequency
+  oss:
+    # 存储终端地址 (如果是 Minio 则是你的 IP:9000；如果是阿里云则是 oss-cn-hangzhou.aliyuncs.com)
+    endpoint: oss-cn-beijing.aliyuncs.com
+    # 账号
+    access-key: ${ALIYUN_ACCESS_KEY}
+    # 密码
+    secret-key: ${ALIYUN_SECRET_KEY}
