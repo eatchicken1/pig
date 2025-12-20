@@ -53,7 +53,6 @@ spring:
       redis:
         index: frequency_idx
         prefix: "freq:emb:"
-        initialize-schema: true
 
 mybatis-plus:
   mapper-locations: classpath:/mybatis/mapper/**/*.xml
@@ -65,3 +64,14 @@ mybatis-plus:
 logging:
   level:
     com.pig4cloud.pig.business.mapper: info
+
+file:
+  # 业务桶名称（SysFileService 使用）
+  bucket-name: pig-frequency
+  # OSS 配置 (注意缩进！属于 file 的子节点)
+  oss:
+    # 填写您的 OSS 或 Minio 地址 (直接写值，不要加 ${} 除非是引用环境变量)
+    endpoint: oss-cn-beijing.aliyuncs.com
+    # 阿里云/Minio 账号密码
+    access-key: ${ALIYUN_ACCESS_KEY}
+    secret-key: ${ALIYUN_SECRET_KEY}
