@@ -16,5 +16,9 @@
         <result property="createTime" column="create_time"/>
         <result property="delFlag" column="del_flag"/>
         <result property="tenantId" column="tenant_id"/>
+	  	<result property="isTradable" column="is_tradable"/>
+	  	<result property="price" column="price"/>
+	  	<result property="salesCount" column="sales_count"/>
+	  	<result property="coverUrl" column="cover_url"/>
   </resultMap>
 </mapper>

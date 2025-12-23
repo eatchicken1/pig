@@ -20,6 +20,12 @@
 		<result column="nickname" property="nickname"/>
 		<result column="name" property="name"/>
 		<result column="email" property="email"/>
+		<result column="school_id" property="schoolId"/>
+		<result column="student_id" property="studentId"/>
+		<result column="major" property="major"/>
+		<result column="enrollment_year" property="enrollmentYear"/>
+		<result column="mbti" property="mbti"/>
+		<result column="verified" property="verified"/>
 		<association property="dept" javaType="com.pig4cloud.pig.admin.api.entity.SysDept" column="dept_id"
 					 select="com.pig4cloud.pig.admin.mapper.SysDeptMapper.selectById">
 		</association>

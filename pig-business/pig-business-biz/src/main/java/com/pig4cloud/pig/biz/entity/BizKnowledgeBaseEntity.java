@@ -96,4 +96,29 @@ public class BizKnowledgeBaseEntity extends Model<BizKnowledgeBaseEntity> {
 	*/
     @Schema(description="租户ID")
     private Long tenantId;
+
+	/**
+	 * 是否上架黑市 (0否 1是)
+	 */
+	@Schema(description = "是否上架黑市 (0否 1是)")
+	private String isTradable;
+
+	/**
+	 * 售价 (积分)
+	 */
+	@Schema(description = "售价 (积分)")
+	private Integer price;
+
+	/**
+	 * 销量
+	 */
+	@Schema(description = "销量")
+	private Integer salesCount;
+
+	/**
+	 * 封面图URL (用于黑市展示)
+	 */
+	@Schema(description = "封面图URL (用于黑市展示)")
+	private String coverUrl;
+
 }

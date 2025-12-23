@@ -159,4 +159,40 @@ public class UserVO implements Serializable {
 	@Schema(description = "邮箱")
 	private String email;
 
+	/**
+	 * 所属学校ID
+	 */
+	@Schema(description = "所属学校ID")
+	private Long schoolId;
+
+	/**
+	 * 学号
+	 */
+	@Schema(description = "学号")
+	private String studentId;
+
+	/**
+	 * 专业
+	 */
+	@Schema(description = "专业")
+	private String major;
+
+	/**
+	 * 入学年份
+	 */
+	@Schema(description = "入学年份")
+	private Integer enrollmentYear;
+
+	/**
+	 * MBTI人格
+	 */
+	@Schema(description = "MBTI人格")
+	private String mbti;
+
+	/**
+	 * 认证状态
+	 */
+	@Schema(description = "认证状态")
+	private String verified;
+
 }
