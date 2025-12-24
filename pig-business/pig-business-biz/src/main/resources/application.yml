@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: pig-business
+    name: pig-business-biz
   cloud:
     nacos:
       username: @nacos.username@
@@ -65,3 +65,19 @@ file:
     # 阿里云/Minio 账号密码
     access-key: ${ALIYUN_ACCESS_KEY}
     secret-key: ${ALIYUN_SECRET_KEY}
+
+# 自定义业务配置
+frequency:
+  ai:
+    # 你的 Python 服务地址
+    url: http://localhost:8000/api/v1/ai/vibe-check
+
+security:
+  oauth2:
+    ignore:
+      urls:
+        - /swagger
+        - /swagger/**
+        - /v3/api-docs/**
+        - /swagger-ui.html
+        - /swagger-ui/**

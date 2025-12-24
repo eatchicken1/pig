@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import com.pig4cloud.pig.common.core.util.TenantTable;
 import java.time.LocalDateTime;
 
 /**
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
  * @date 2025-12-23 16:16:01
  */
 @Data
-@TenantTable
 @TableName("biz_order")
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "积分交易订单表")

@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnablePigResourceServer
-@EnablePigDoc(value = "admin", isMicro = false)
+@EnablePigDoc(value = "business")
 @EnableAsync
 public class PigBusinessApplication {
 	private static final Logger LOGGER = LogManager.getLogger(PigBusinessApplication.class);

@@ -130,4 +130,31 @@ public class BizEchoProfileController {
     public R importExcel(@RequestExcel List<BizEchoProfileEntity> bizEchoProfileList, BindingResult bindingResult) {
         return R.ok(bizEchoProfileService.saveBatch(bizEchoProfileList));
     }
+
+	@Operation(summary = "获取我的分身配置")
+	@GetMapping("/my")
+	public R<BizEchoProfileEntity> getMyProfile() {
+		return R.ok(bizEchoProfileService.getMyEchoProfile());
+	}
+
+	@Operation(summary = "保存/更新我的分身配置")
+	@SysLog("更新 AI 分身配置")
+	@PutMapping("/my")
+	public R<Boolean> updateMyProfile(@RequestBody BizEchoProfileEntity profile) {
+		return R.ok(bizEchoProfileService.updateMyEchoProfile(profile));
+	}
+
+	@Operation(summary = "通过ID查看他人分身 (公开信息)")
+	@GetMapping("/{id}")
+	public R<BizEchoProfileEntity> getOtherProfile(@PathVariable Long id) {
+		BizEchoProfileEntity profile = bizEchoProfileService.getById(id);
+		if (profile == null) {
+			return R.failed("该用户暂未开通 AI 分身");
+		}
+		// 隐私保护：如果是查看他人，可能需要隐藏某些字段（如 Prompt），目前先全返回
+		if ("0".equals(profile.getIsPublic())) {
+			return R.failed("该用户已设置隐私保护");
+		}
+		return R.ok(profile);
+	}
 }
