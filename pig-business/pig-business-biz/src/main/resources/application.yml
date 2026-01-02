@@ -70,7 +70,7 @@ file:
 frequency:
   ai:
     # 你的 Python 服务地址
-    url: http://localhost:8000/api/v1/ai/vibe-check
+    url: http://localhost:8000
 
 security:
   oauth2:

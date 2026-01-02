@@ -41,7 +41,7 @@ public class FrequencyAiServiceImpl {
 	private final BizMatchRecordMapper bizMatchRecordMapper;
 	private final BizChatHistoryMapper bizChatHistoryMapper;
 
-	@Value("${frequency.ai.url:http://localhost:8000/api/v1/ai/vibe-check}")
+	@Value("${frequency.ai.url:http://localhost:8000}")
 	private String aiEngineUrl;
 
 	// 定义通过分数的阈值 (比如 75 分及格)
@@ -196,6 +196,7 @@ public class FrequencyAiServiceImpl {
 			log.info(">>>> 调用 Python 引擎: URL={}, Payload={}", aiEngineUrl, jsonBody);
 
 			// 设置超时时间 60秒 (AI 生成比较慢)
+			String aiEngineUrl = this.aiEngineUrl + "/api/v1/ai/vibe-check";
 			HttpResponse response = HttpRequest.post(aiEngineUrl)
 					.body(jsonBody)
 					.timeout(60000)

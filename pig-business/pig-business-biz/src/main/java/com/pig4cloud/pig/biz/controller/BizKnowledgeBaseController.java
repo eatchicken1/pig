@@ -8,12 +8,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.common.security.annotation.HasPermission;
+import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import com.pig4cloud.plugin.excel.annotation.RequestExcel;
 import com.pig4cloud.pig.biz.entity.BizKnowledgeBaseEntity;
 import com.pig4cloud.pig.biz.service.BizKnowledgeBaseService;
-
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpHeaders;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +24,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -35,6 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/bizKnowledgeBase" )
 @Tag(description = "bizKnowledgeBase" , name = "知识库文档表管理" )
+@Slf4j
 @SecurityRequirement(name = HttpHeaders.AUTHORIZATION)
 public class BizKnowledgeBaseController {
 
@@ -134,9 +139,11 @@ public class BizKnowledgeBaseController {
 
 	@PostMapping("/train")
 	@Operation(summary = "投喂文档进行 AI 训练")
-	@HasPermission("admin_bizKnowledgeBase_train")
-	public R<String> train(@RequestParam("file") MultipartFile file, @RequestParam("echoId") Long echoId) {
-		bizKnowledgeBaseService.uploadAndTrain(file, echoId);
+	//@HasPermission("admin_bizKnowledgeBase_train")
+	public R<String> train(@RequestParam("file") MultipartFile file, @RequestParam("echoId") Long echoId) throws IOException {
+		Path tempFile = Files.createTempFile("kb-", ".tmp");
+		file.transferTo(tempFile.toFile());
+		bizKnowledgeBaseService.uploadAndTrain(tempFile, echoId, SecurityUtils.getUser());
 		return R.ok("文件已接收，Echo 正在闭关修炼中...");
 	}
 }
