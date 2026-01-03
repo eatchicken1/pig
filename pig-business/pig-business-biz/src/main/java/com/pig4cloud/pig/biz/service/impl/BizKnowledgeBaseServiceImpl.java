@@ -1,18 +1,23 @@
 package com.pig4cloud.pig.biz.service.impl;
 
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.pig4cloud.pig.biz.api.dto.DeleteKnowledgeRequest;
 import com.pig4cloud.pig.biz.api.dto.TrainKnowledgeRequest;
 import com.pig4cloud.pig.biz.api.feign.FrequencyAiClient;
 import com.pig4cloud.pig.biz.entity.BizKnowledgeBaseEntity;
+import com.pig4cloud.pig.biz.event.KnowledgeDeleteEvent;
 import com.pig4cloud.pig.biz.mapper.BizKnowledgeBaseMapper;
 import com.pig4cloud.pig.biz.service.BizKnowledgeBaseService;
+import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.file.core.FileProperties;
 import com.pig4cloud.pig.common.file.core.FileTemplate;
 import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
@@ -22,7 +27,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * 知识库文档表
@@ -39,6 +46,7 @@ public class BizKnowledgeBaseServiceImpl extends ServiceImpl<BizKnowledgeBaseMap
 	private final FrequencyAiClient frequencyAiClient;
 	private final FileTemplate fileTemplate;
 	private final FileProperties fileProperties;
+	private final ApplicationContext applicationContext;
 
 	//@Async() // 异步处理，防止 PDF 解析过久导致前端请求超时
 	@Override
@@ -69,6 +77,35 @@ public class BizKnowledgeBaseServiceImpl extends ServiceImpl<BizKnowledgeBaseMap
 			return null;
 		}
 	}
+	@Override
+	@Transactional(rollbackFor = Exception.class) // 添加事务，保证数据库操作的原子性
+	public Boolean removeKnowledgeBatchByIds(List<Long> ids) {
+		if (CollUtil.isEmpty(ids)) {
+			return false;
+		}
+		// 1. 查询待删除数据（为了构建 AI 删除所需的参数）
+		List<BizKnowledgeBaseEntity> knowledgeList = this.listByIds(ids);
+		if (CollUtil.isEmpty(knowledgeList)) {
+			return false;
+		}
+		// 2. 先执行数据库删除
+		boolean removed = this.removeBatchByIds(ids);
+		if (removed) {
+			// 3. 构建事件参数
+			List<DeleteKnowledgeRequest> deleteRequests = knowledgeList.stream().map(entity -> {
+				DeleteKnowledgeRequest req = new DeleteKnowledgeRequest();
+				req.setKnowledgeId(entity.getId());
+				req.setEchoId(String.valueOf(entity.getEchoId()));
+				req.setUserId(String.valueOf(entity.getCreateBy()));
+				return req;
+			}).collect(Collectors.toList());
+			// 4. 发布事件 (由监听器去异步、批量处理)
+			applicationContext.publishEvent(new KnowledgeDeleteEvent(this, deleteRequests));
+		}
+		return removed;
+	}
+
+
 	@Async("aiTrainExecutor") // 使用异步注解
 	public void asyncStartTrain(Long knowledgeId) {
 		try {

@@ -20,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -148,5 +150,18 @@ public class BizKnowledgeBaseController {
 		}
 		Long recordId = bizKnowledgeBaseService.uploadAndTrain(file, userId);
 		return R.ok(recordId);
+	}
+	/**
+	 * 删除知识库
+	 * @param ids id列表
+	 * @return R
+	 */
+	@Operation(summary = "删除知识库", description = "删除知识库")
+	@SysLog("删除知识库")
+	@DeleteMapping
+	@PreAuthorize("@pms.hasPermission('biz_knowledgebase_del')")
+	public R removeByIds(@RequestBody Long[] ids) {
+		// 逻辑全部下沉到 Service，Controller 只负责传递参数
+		return R.ok(bizKnowledgeBaseService.removeKnowledgeBatchByIds(Arrays.asList(ids)));
 	}
 }

@@ -1,5 +1,7 @@
 package com.pig4cloud.pig.biz.api.feign;
 
+import com.pig4cloud.pig.biz.api.dto.BatchDeleteKnowledgeRequest;
+import com.pig4cloud.pig.biz.api.dto.DeleteKnowledgeRequest;
 import com.pig4cloud.pig.biz.api.dto.TrainKnowledgeRequest;
 import com.pig4cloud.pig.common.core.util.R;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -20,4 +22,18 @@ public interface FrequencyAiClient {
 	 */
 	@PostMapping("/ai/knowledge/train")
 	void trainKnowledge(@RequestBody TrainKnowledgeRequest request);
+
+	/**
+	 * 删除知识库向量
+	 * @param request 删除请求参数
+	 * @return R
+	 */
+	@PostMapping("/ai/knowledge/delete")
+	R deleteKnowledge(@RequestBody DeleteKnowledgeRequest request);
+
+	/**
+	 * 批量删除知识库向量 (新接口)
+	 */
+	@PostMapping("/ai/knowledge/batch-delete")
+	R batchDeleteKnowledge(@RequestBody BatchDeleteKnowledgeRequest request);
 }
