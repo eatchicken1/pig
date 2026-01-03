@@ -140,10 +140,13 @@ public class BizKnowledgeBaseController {
 	@PostMapping("/train")
 	@Operation(summary = "投喂文档进行 AI 训练")
 	//@HasPermission("admin_bizKnowledgeBase_train")
-	public R<String> train(@RequestParam("file") MultipartFile file, @RequestParam("echoId") Long echoId) throws IOException {
-		Path tempFile = Files.createTempFile("kb-", ".tmp");
-		file.transferTo(tempFile.toFile());
-		bizKnowledgeBaseService.uploadAndTrain(tempFile, echoId, SecurityUtils.getUser());
-		return R.ok("文件已接收，Echo 正在闭关修炼中...");
+	public R<Long> train(
+			@RequestParam("file") MultipartFile file,
+			@RequestParam("userId") Long userId) {
+		if (file.isEmpty()) {
+			return R.failed("文件不能为空");
+		}
+		Long recordId = bizKnowledgeBaseService.uploadAndTrain(file, userId);
+		return R.ok(recordId);
 	}
 }

@@ -84,6 +84,20 @@ public class BizKnowledgeBaseEntity extends Model<BizKnowledgeBaseEntity> {
     private LocalDateTime createTime;
 
 	/**
+	* 修改人
+	*/
+	@TableField(fill = FieldFill.UPDATE)
+    @Schema(description="修改人")
+    private String updateBy;
+
+	/**
+	 * 修改时间
+	 */
+	@TableField(fill = FieldFill.UPDATE)
+    @Schema(description="修改时间")
+    private LocalDateTime updateTime;
+
+	/**
 	* 删除标记
 	*/
     @TableLogic

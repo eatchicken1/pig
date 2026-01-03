@@ -1,30 +1,28 @@
 package com.pig4cloud.pig.biz.service.impl;
 
-import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.StrUtil;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.pig4cloud.pig.admin.api.dto.UserInfo;
+import com.pig4cloud.pig.biz.api.dto.TrainKnowledgeRequest;
 import com.pig4cloud.pig.biz.api.feign.FrequencyAiClient;
 import com.pig4cloud.pig.biz.entity.BizKnowledgeBaseEntity;
 import com.pig4cloud.pig.biz.mapper.BizKnowledgeBaseMapper;
 import com.pig4cloud.pig.biz.service.BizKnowledgeBaseService;
-import com.pig4cloud.pig.common.core.util.R;
-import com.pig4cloud.pig.common.security.service.PigUser;
+import com.pig4cloud.pig.common.file.core.FileProperties;
+import com.pig4cloud.pig.common.file.core.FileTemplate;
 import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Future;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * 知识库文档表
@@ -35,60 +33,103 @@ import java.util.concurrent.Future;
 @RequiredArgsConstructor
 @Slf4j
 @Service
+@EnableAsync
 public class BizKnowledgeBaseServiceImpl extends ServiceImpl<BizKnowledgeBaseMapper, BizKnowledgeBaseEntity> implements BizKnowledgeBaseService {
 
 	private final FrequencyAiClient frequencyAiClient;
+	private final FileTemplate fileTemplate;
+	private final FileProperties fileProperties;
 
 	//@Async() // 异步处理，防止 PDF 解析过久导致前端请求超时
 	@Override
-	@Transactional(rollbackFor = Exception.class)
-	public void uploadAndTrain(Path filePath, Long echoId, PigUser userInfo) {
-		File file = new File(String.valueOf(filePath));
-
-		if (!file.exists() || file.length() == 0) {
-			throw new RuntimeException("训练文件不存在或为空");
-		}
-		// 1. 保存元数据并初始化状态
-		BizKnowledgeBaseEntity kb = new BizKnowledgeBaseEntity();
-		kb.setEchoId(echoId);
-		kb.setFileName(file.getName());
-		kb.setVectorStatus("1"); // 状态：处理中
-		kb.setCreateBy(userInfo.getUsername());
-		kb.setFileUrl(String.valueOf(filePath));
-		this.save(kb);
-
+	@Transactional
+	public Long uploadAndTrain(MultipartFile file, Long userId) {
 		try {
-			String filename = file.getName();
-			String content = "";
+			//上传 OSS
+			String ossUrl = this.upload(file);
 
-			// 确保文件有效且未被关闭
-			content = Files.readString(filePath, StandardCharsets.UTF_8);
+			//保存 DB 记录（状态 = UPLOADED）
+			BizKnowledgeBaseEntity entity = new BizKnowledgeBaseEntity();
+			entity.setEchoId(userId);
+			entity.setFileName(file.getOriginalFilename());
+			entity.setFileType(FilenameUtils.getExtension(file.getOriginalFilename()));
+			entity.setFileUrl(ossUrl);
+			entity.setVectorStatus("0");
+			entity.setCreateTime(LocalDateTime.now());
+			entity.setCreateBy(SecurityUtils.getUser().getUsername());
 
-			if (StrUtil.isBlank(content)) {
-				throw new IllegalArgumentException("文件内容为空");
-			}
-			// 2. 组装请求参数 (对应 Python 侧的 KnowledgeIngestRequest)
-			Map<String, Object> aiRequest = new HashMap<>();
-			// 获取当前登录用户 ID (Pig 框架标准用法)
-			aiRequest.put("user_id", userInfo.getId());
-			aiRequest.put("echo_id", echoId.toString());
-			aiRequest.put("content", content);
-			aiRequest.put("source_name", filename);
-			// 可选：添加一些元数据
-			Map<String, Object> metadata = new HashMap<>();
-			metadata.put("upload_time", System.currentTimeMillis());
-			aiRequest.put("metadata", metadata);
-			log.info("正在向 AI 引擎投喂文件: {}, 长度: {}", filename, content.length());
-			kb.setVectorStatus("2");
-			this.updateById(kb);
-			// 3. 远程调用
-			frequencyAiClient.ingestKnowledge(aiRequest);
+			this.save(entity);
+
+			//异步触发 AI 训练（不阻塞）
+			this.asyncStartTrain(entity.getId());
+
+			return entity.getId();
 		} catch (Exception e) {
-			log.error("投喂失败", e);
-			kb.setVectorStatus("9");
-			this.updateById(kb);
-			//return R.failed("投喂失败: " + e.getMessage());
-			throw new RuntimeException("投喂失败: " + e.getMessage());
+			log.error("上传文件失败", e);
+			return null;
 		}
 	}
+	@Async("aiTrainExecutor") // 使用异步注解
+	public void asyncStartTrain(Long knowledgeId) {
+		try {
+			this.startTrain(knowledgeId);
+		} catch (Exception e) {
+			log.error("AI 训练失败", e);
+			BizKnowledgeBaseEntity entity = this.getById(knowledgeId);
+			if (entity != null) {
+				entity.setVectorStatus("9");
+				entity.setUpdateTime(LocalDateTime.now());
+				entity.setUpdateBy(SecurityUtils.getUser().getUsername());
+				this.updateById(entity);
+			}
+		}
+	}
+	private void startTrain(Long knowledgeId) {
+		//更新状态
+		BizKnowledgeBaseEntity entityBase = this.getById(knowledgeId);
+		entityBase.setVectorStatus("1");
+		entityBase.setUpdateTime(LocalDateTime.now());
+		entityBase.setUpdateBy(SecurityUtils.getUser().getUsername());
+		this.updateById(entityBase);
+		BizKnowledgeBaseEntity entity = this.getById(knowledgeId);
+		//调用 AI 服务
+		TrainKnowledgeRequest req = new TrainKnowledgeRequest();
+		req.setKnowledge_id(knowledgeId);
+		req.setUser_id(entityBase.getEchoId().toString());
+		req.setEcho_id(entityBase.getEchoId().toString());
+		req.setFile_url(entity.getFileUrl());
+		req.setFile_type(entity.getFileType());
+		req.setSource_name(entity.getFileName());
+		frequencyAiClient.trainKnowledge(req);
+
+		//成功
+		entity.setVectorStatus("2");
+		this.updateById(entity);
+	}
+	private String upload(MultipartFile file) throws IOException {
+		// 1. 生成唯一文件名（避免重复）
+		String originalFilename = file.getOriginalFilename();
+		String fileSuffix = null;
+		if (originalFilename != null) {
+			fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+		}
+		String fileName = UUID.randomUUID().toString() + fileSuffix;
+		// 2. 获取存储桶名称（从配置文件读取）
+		String bucketName = fileProperties.getBucketName();
+		// 3. 上传文件到OSS
+		try (InputStream inputStream = file.getInputStream()) {
+			// 调用OSS模板上传，指定文件类型
+			fileTemplate.putObject(bucketName, fileName, inputStream, file.getContentType());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		// 4. 生成访问URL（阿里云OSS访问路径格式）
+		// 格式：https://bucketName.endpoint/fileName
+		String endpoint = fileProperties.getOss().getEndpoint();
+		if (endpoint.startsWith("http://") || endpoint.startsWith("https://")) {
+			endpoint = endpoint.substring(endpoint.indexOf("://") + 3);
+		}
+		return String.format("https://%s.%s/%s", bucketName, endpoint, fileName);
+	}
+
 }

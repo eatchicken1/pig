@@ -1,5 +1,6 @@
 package com.pig4cloud.pig.biz.api.feign;
 
+import com.pig4cloud.pig.biz.api.dto.TrainKnowledgeRequest;
 import com.pig4cloud.pig.common.core.util.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,6 @@ public interface FrequencyAiClient {
 	/**
 	 * 调用 AI 侧的 /knowledge/add 接口
 	 */
-	@PostMapping("/knowledge/add")
-	R<Map<String, Object>> ingestKnowledge(@RequestBody Map<String, Object> request);
+	@PostMapping("/ai/knowledge/train")
+	void trainKnowledge(@RequestBody TrainKnowledgeRequest request);
 }

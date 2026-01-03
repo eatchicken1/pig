@@ -14,6 +14,8 @@
         <result property="summary" column="summary"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
+	  	<result property="updateBy" column="update_by"/>
+	  	<result property="updateTime" column="update_time"/>
         <result property="delFlag" column="del_flag"/>
         <result property="tenantId" column="tenant_id"/>
 	  	<result property="isTradable" column="is_tradable"/>

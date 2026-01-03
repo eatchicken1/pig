@@ -14,5 +14,5 @@ public interface BizKnowledgeBaseService extends IService<BizKnowledgeBaseEntity
 	/**
 	 * 上传文档并启动 AI 训练流程
 	 */
-	void uploadAndTrain(Path file, Long echoId, PigUser userInfo);
+	public Long uploadAndTrain(MultipartFile file, Long userId);
 }
