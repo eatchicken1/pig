@@ -1,12 +1,14 @@
 package com.pig4cloud.pig.biz.api.feign;
 
 import com.pig4cloud.pig.biz.api.dto.BatchDeleteKnowledgeRequest;
+import com.pig4cloud.pig.biz.api.dto.ChatRequestDTO;
 import com.pig4cloud.pig.biz.api.dto.DeleteKnowledgeRequest;
 import com.pig4cloud.pig.biz.api.dto.TrainKnowledgeRequest;
 import com.pig4cloud.pig.common.core.util.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import feign.Response;
 
 import java.util.Map;
 
@@ -36,4 +38,11 @@ public interface FrequencyAiClient {
 	 */
 	@PostMapping("/ai/knowledge/batch-delete")
 	R batchDeleteKnowledge(@RequestBody BatchDeleteKnowledgeRequest request);
+
+	/**
+	 * 流式对话接口
+	 * 注意：返回 feign.Response 以支持流处理
+	 */
+	@PostMapping("/ai/chat/stream")
+	Response streamChat(@RequestBody ChatRequestDTO request);
 }

@@ -3,9 +3,15 @@ package com.pig4cloud.pig.biz.service;
 import com.pig4cloud.pig.biz.api.dto.ChatRequestDTO;
 import reactor.core.publisher.Flux;
 
+import java.io.InputStream;
+
 public interface BizChatService {
 	/**
-	 * AI 流式对话核心业务
+	 * 发起流式对话
+	 *
+	 * @param echoId 数字分身ID
+	 * @param query  用户提问
+	 * @return AI响应的数据流
 	 */
-	Flux<String> streamChat(ChatRequestDTO request);
+	InputStream streamChat(String echoId, String query);
 }

@@ -158,10 +158,9 @@ public class BizKnowledgeBaseController {
 	 */
 	@Operation(summary = "删除知识库", description = "删除知识库")
 	@SysLog("删除知识库")
-	@DeleteMapping
+	@DeleteMapping("/removeByIds")
 	@PreAuthorize("@pms.hasPermission('biz_knowledgebase_del')")
 	public R removeByIds(@RequestBody Long[] ids) {
-		// 逻辑全部下沉到 Service，Controller 只负责传递参数
 		return R.ok(bizKnowledgeBaseService.removeKnowledgeBatchByIds(Arrays.asList(ids)));
 	}
 }

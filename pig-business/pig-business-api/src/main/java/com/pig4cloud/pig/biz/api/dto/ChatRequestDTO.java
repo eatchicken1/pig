@@ -1,16 +1,20 @@
 package com.pig4cloud.pig.biz.api.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import java.util.List;
+import java.util.Map;
 
 @Data
 public class ChatRequestDTO {
-	@NotNull(message = "目标Echo不能为空")
-	private Long echoId;
+	@JsonProperty("user_id")
+	private String userId;
 
-	@NotBlank(message = "内容不能为空")
-	private String content;
+	@JsonProperty("echo_id")
+	private String echoId;
 
-	private String sessionId; // 用于关联上下文连贯对话
+	private String query;
+
+	// 历史记录，前端传简单的 List<Map> 即可，例如 [{"role":"user","content":"hi"}]
+	private List<Map<String, String>> history;
 }
