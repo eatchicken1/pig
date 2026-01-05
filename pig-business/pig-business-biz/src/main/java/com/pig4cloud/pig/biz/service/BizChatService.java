@@ -13,5 +13,5 @@ public interface BizChatService {
 	 * @param query  用户提问
 	 * @return AI响应的数据流
 	 */
-	InputStream streamChat(String echoId, String query);
+	InputStream streamChat(String echoId, String query, String conversationId);
 }
