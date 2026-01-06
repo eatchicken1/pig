@@ -50,6 +50,8 @@ public class BizChatHistoryController {
     @HasPermission("admin_bizChatHistory_view")
     public R getBizChatHistoryPage(@ParameterObject Page page, @ParameterObject BizChatHistoryEntity bizChatHistory) {
         LambdaQueryWrapper<BizChatHistoryEntity> wrapper = Wrappers.lambdaQuery();
+        // 按时间倒序排列，最新的记录先返回
+        wrapper.orderByDesc(BizChatHistoryEntity::getCreateTime);
         return R.ok(bizChatHistoryService.page(page, wrapper));
     }
 
