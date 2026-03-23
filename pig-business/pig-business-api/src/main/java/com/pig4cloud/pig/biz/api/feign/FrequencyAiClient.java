@@ -16,7 +16,8 @@ import java.util.Map;
  * AI 引擎远程调用客户端
  * url 从配置文件 frequency.ai.url 读取，默认 http://localhost:8000
  */
-@FeignClient(contextId = "frequencyAiClient", name = "frequency-ai-engine", url = "${frequency.ai.url:http://localhost:8000}")
+@FeignClient(contextId = "frequencyAiClient", name = "frequency-ai-engine",
+		url = "${frequency.ai.url:${frequency.ai.python-runtime-url:http://localhost:8000}}")
 public interface FrequencyAiClient {
 
 	/**

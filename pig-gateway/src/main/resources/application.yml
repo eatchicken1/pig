@@ -5,6 +5,12 @@ spring:
   application:
     name: @artifactId@
   cloud:
+    gateway:
+      routes:
+        - id: pig-ai-app
+          uri: lb://pig-ai-app
+          predicates:
+            - Path=/ai/**
     nacos:
       username: @nacos.username@
       password: @nacos.password@

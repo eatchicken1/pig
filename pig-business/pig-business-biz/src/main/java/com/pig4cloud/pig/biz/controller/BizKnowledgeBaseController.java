@@ -5,10 +5,10 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pig4cloud.pig.ai.api.feign.RemoteAiAppClient;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.log.annotation.SysLog;
 import com.pig4cloud.pig.common.security.annotation.HasPermission;
-import com.pig4cloud.pig.common.security.util.SecurityUtils;
 import com.pig4cloud.plugin.excel.annotation.ResponseExcel;
 import com.pig4cloud.plugin.excel.annotation.RequestExcel;
 import com.pig4cloud.pig.biz.entity.BizKnowledgeBaseEntity;
@@ -46,6 +46,8 @@ import java.util.List;
 public class BizKnowledgeBaseController {
 
     private final  BizKnowledgeBaseService bizKnowledgeBaseService;
+
+	private final RemoteAiAppClient remoteAiAppClient;
 
     /**
      * 分页查询
@@ -148,8 +150,7 @@ public class BizKnowledgeBaseController {
 		if (file.isEmpty()) {
 			return R.failed("文件不能为空");
 		}
-		Long recordId = bizKnowledgeBaseService.uploadAndTrain(file, userId);
-		return R.ok(recordId);
+		return remoteAiAppClient.trainKnowledge(file, userId);
 	}
 	/**
 	 * 删除知识库
@@ -161,6 +162,6 @@ public class BizKnowledgeBaseController {
 	@DeleteMapping("/removeByIds")
 	@PreAuthorize("@pms.hasPermission('biz_knowledgebase_del')")
 	public R removeByIds(@RequestBody Long[] ids) {
-		return R.ok(bizKnowledgeBaseService.removeKnowledgeBatchByIds(Arrays.asList(ids)));
+		return remoteAiAppClient.removeKnowledgeByIds(ids);
 	}
 }

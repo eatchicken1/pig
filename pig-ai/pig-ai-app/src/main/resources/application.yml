@@ -12,4 +12,30 @@ frequency:
   ai:
     default-provider: dashscope
     python-runtime-url: http://localhost:8000
+    url: ${frequency.ai.python-runtime-url}
+    agent:
+      url: http://localhost:5011
     mcp-enabled: false
+    rag-store-file: D:\Study\dev_project\frequency\pig\data\ai\simple-vector-store.json
+    rag-top-k: 6
+    rag-similarity-threshold: 0.15
+    rag-history-limit: 20
+    rag-chunk-size: 500
+    rag-min-chunk-size-chars: 100
+    rag-min-chunk-length-to-embed: 5
+    rag-max-num-chunks: 10000
+  business:
+    url: http://localhost:5008
+
+file:
+  local:
+    enable: false
+    base-path: D:\Study\dev_project\upload
+  bucket-name: pig-frequency
+  oss:
+    enable: true
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    access-key: ${ALIYUN_ACCESS_KEY:}
+    secret-key: ${ALIYUN_SECRET_KEY:}
+    region: cn-beijing
+    path-style-access: false

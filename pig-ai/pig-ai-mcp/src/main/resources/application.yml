@@ -1,5 +1,5 @@
 server:
-  port: 5011
+  port: 5012
 
 spring:
   application:
@@ -9,3 +9,10 @@ spring:
       server:
         name: pig-ai-mcp
         version: 0.1.0
+
+frequency:
+  ai:
+    app:
+      url: http://localhost:5010
+  business:
+    url: http://localhost:5008

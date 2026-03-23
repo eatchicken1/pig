@@ -7,10 +7,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnablePigDoc("ai-app")
 @EnablePigResourceServer
+@EnableAsync
 @EnableFeignClients
 @EnableConfigurationProperties(AiModuleProperties.class)
 public class PigAiApplication {

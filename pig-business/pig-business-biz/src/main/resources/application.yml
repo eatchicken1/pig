@@ -20,10 +20,10 @@ spring:
     # MySQL 8.x 驱动类
     driver-class-name: com.mysql.cj.jdbc.Driver
     # 数据库连接 URL（替换为你的数据库地址/库名，Pig 框架默认库名 pig）
-    url: jdbc:mysql://localhost:3306/pig_business?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3306}/${BUSINESS_MYSQL_DB:pig_business}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
     # 数据库账号密码（替换为你的实际账号）
-    username: root
-    password: root
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:root}
     # 连接池配置（Pig 框架默认用 HikariCP，无需额外依赖）
     hikari:
       minimum-idle: 5
@@ -35,9 +35,9 @@ spring:
       connection-timeout: 30000
   data:
     redis:
-      host: 127.0.0.2
-      port: 6379
-      password: 123456
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:123456}
   ai:
     vectorstore:
       redis:
@@ -77,6 +77,8 @@ frequency:
   ai:
     # 你的 Python 服务地址
     url: http://localhost:8000
+    app:
+      url: http://localhost:5010
 
 security:
   oauth2:

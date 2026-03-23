@@ -16,6 +16,7 @@
 
 	<modules>
 		<module>pig-ai-api</module>
+		<module>pig-ai-agent</module>
 		<module>pig-ai-app</module>
 		<module>pig-ai-mcp</module>
 	</modules>

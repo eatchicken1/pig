@@ -1,0 +1,12 @@
+server:
+  port: 5011
+
+spring:
+  application:
+    name: pig-ai-agent
+
+frequency:
+  business:
+    url: http://localhost:5008
+  agent-runtime:
+    url: ${frequency.ai.python-runtime-url:http://localhost:8000}
