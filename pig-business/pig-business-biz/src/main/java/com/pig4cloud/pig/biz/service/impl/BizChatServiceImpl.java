@@ -1,32 +1,29 @@
 package com.pig4cloud.pig.biz.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.pig4cloud.pig.biz.api.feign.FrequencyAiClient;
+import com.pig4cloud.pig.ai.api.chat.AiChatCommand;
+import com.pig4cloud.pig.ai.api.chat.AiChatGateway;
+import com.pig4cloud.pig.ai.api.chat.AiChatMessage;
 import com.pig4cloud.pig.biz.entity.BizChatHistoryEntity;
 import com.pig4cloud.pig.biz.entity.BizEchoProfileEntity;
+import com.pig4cloud.pig.biz.service.BizEchoProfileService;
 import com.pig4cloud.pig.biz.service.BizChatHistoryService;
 import com.pig4cloud.pig.biz.service.BizChatService;
-import com.pig4cloud.pig.biz.api.dto.ChatRequestDTO;
-import com.pig4cloud.pig.biz.service.BizEchoProfileService;
 import com.pig4cloud.pig.common.security.util.SecurityUtils;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import feign.Response;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BizChatServiceImpl implements BizChatService {
-	private final FrequencyAiClient frequencyAiClient;
+	private final AiChatGateway chatGateway;
 	private final BizChatHistoryService chatHistoryService;
 	private final BizEchoProfileService echoProfileService;
 
@@ -42,7 +39,7 @@ public class BizChatServiceImpl implements BizChatService {
 		BizEchoProfileEntity profile = echoProfileService.getById(userId);
 
 		// 2. 组装请求参数
-		ChatRequestDTO chatRequest = new ChatRequestDTO();
+		AiChatCommand chatRequest = new AiChatCommand();
 		chatRequest.setEchoId(userId);
 		chatRequest.setQuery(query);
 		chatRequest.setUserId(String.valueOf(userId));
@@ -69,38 +66,16 @@ public class BizChatServiceImpl implements BizChatService {
 		if (!historyList.isEmpty()) {
 			// 排除掉刚刚插入的那条当前问题（如果查询策略包含它），或者全部传给AI由AI去重
 			// 通常做法：History 不包含当前 query，当前 query 单独传
-			List<ChatRequestDTO.Message> context = historyList.stream()
+			List<AiChatMessage> context = historyList.stream()
 					.filter(h -> !h.getContent().equals(query)) // 简单去重，可选
-					.map(h -> {
-						ChatRequestDTO.Message msg = new ChatRequestDTO.Message();
-						msg.setRole(h.getRole()); // "user" 或 "assistant"
-						msg.setContent(h.getContent());
-						return msg;
-					}).collect(Collectors.toList());
+					.map(h -> new AiChatMessage(h.getRole(), h.getContent()))
+					.collect(Collectors.toList());
 			chatRequest.setHistory(context);
 		} else {
 			chatRequest.setHistory(Collections.emptyList());
 		}
 
-		// 3. 调用远程 AI 服务
-		Response response;
-		try {
-			response = frequencyAiClient.streamChat(chatRequest);
-		} catch (Exception e) {
-			log.error("调用AI引擎失败", e);
-			throw new RuntimeException("AI服务暂时不可用，请稍后再试");
-		}
-		// 4. 校验响应状态
-		if (response == null || response.body() == null) {
-			throw new RuntimeException("AI服务响应为空");
-		}
-		// 5. 返回流 (注意：流的关闭交由调用方 Controller 处理)
-		try {
-			return response.body().asInputStream();
-		} catch (IOException e) {
-			log.error("获取AI响应流异常", e);
-			throw new RuntimeException("数据流读取失败");
-		}
+		return chatGateway.stream(chatRequest);
 	}
 
 	private void saveUserMessage(String conversationId, String query, Long userId) {

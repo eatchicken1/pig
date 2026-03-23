@@ -22,6 +22,11 @@
             <artifactId>pig-business-api</artifactId>
 			<version>${revision}</version>
         </dependency>
+		<dependency>
+			<groupId>com.pig4cloud</groupId>
+			<artifactId>pig-ai-api</artifactId>
+			<version>${revision}</version>
+		</dependency>
 		<!--文件管理-->
 		<dependency>
 			<groupId>com.pig4cloud</groupId>

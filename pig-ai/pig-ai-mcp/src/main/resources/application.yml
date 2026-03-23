@@ -1,0 +1,11 @@
+server:
+  port: 5011
+
+spring:
+  application:
+    name: pig-ai-mcp
+  ai:
+    mcp:
+      server:
+        name: pig-ai-mcp
+        version: 0.1.0

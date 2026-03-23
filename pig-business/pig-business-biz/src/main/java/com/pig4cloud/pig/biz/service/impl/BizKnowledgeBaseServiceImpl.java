@@ -1,16 +1,14 @@
 package com.pig4cloud.pig.biz.service.impl;
 
-
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.pig4cloud.pig.ai.api.knowledge.AiKnowledgeGateway;
+import com.pig4cloud.pig.ai.api.knowledge.KnowledgeTrainCommand;
 import com.pig4cloud.pig.biz.api.dto.DeleteKnowledgeRequest;
-import com.pig4cloud.pig.biz.api.dto.TrainKnowledgeRequest;
-import com.pig4cloud.pig.biz.api.feign.FrequencyAiClient;
 import com.pig4cloud.pig.biz.entity.BizKnowledgeBaseEntity;
 import com.pig4cloud.pig.biz.event.KnowledgeDeleteEvent;
 import com.pig4cloud.pig.biz.mapper.BizKnowledgeBaseMapper;
 import com.pig4cloud.pig.biz.service.BizKnowledgeBaseService;
-import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.file.core.FileProperties;
 import com.pig4cloud.pig.common.file.core.FileTemplate;
 import com.pig4cloud.pig.common.security.util.SecurityUtils;
@@ -43,7 +41,7 @@ import java.util.stream.Collectors;
 @EnableAsync
 public class BizKnowledgeBaseServiceImpl extends ServiceImpl<BizKnowledgeBaseMapper, BizKnowledgeBaseEntity> implements BizKnowledgeBaseService {
 
-	private final FrequencyAiClient frequencyAiClient;
+	private final AiKnowledgeGateway aiKnowledgeGateway;
 	private final FileTemplate fileTemplate;
 	private final FileProperties fileProperties;
 	private final ApplicationContext applicationContext;
@@ -130,14 +128,14 @@ public class BizKnowledgeBaseServiceImpl extends ServiceImpl<BizKnowledgeBaseMap
 		this.updateById(entityBase);
 		BizKnowledgeBaseEntity entity = this.getById(knowledgeId);
 		//调用 AI 服务
-		TrainKnowledgeRequest req = new TrainKnowledgeRequest();
-		req.setKnowledge_id(knowledgeId);
-		req.setUser_id(entityBase.getEchoId().toString());
-		req.setEcho_id(entityBase.getEchoId().toString());
-		req.setFile_url(entity.getFileUrl());
-		req.setFile_type(entity.getFileType());
-		req.setSource_name(entity.getFileName());
-		frequencyAiClient.trainKnowledge(req);
+		KnowledgeTrainCommand req = new KnowledgeTrainCommand();
+		req.setKnowledgeId(knowledgeId);
+		req.setUserId(entityBase.getEchoId().toString());
+		req.setEchoId(entityBase.getEchoId().toString());
+		req.setFileUrl(entity.getFileUrl());
+		req.setFileType(entity.getFileType());
+		req.setSourceName(entity.getFileName());
+		aiKnowledgeGateway.train(req);
 
 		//成功
 		entity.setVectorStatus("2");

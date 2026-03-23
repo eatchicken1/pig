@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Frequency Backend Core" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
+    <toRun name="Pig Auth" type="MavenRunConfiguration" />
+    <toRun name="Pig Upms" type="MavenRunConfiguration" />
+    <toRun name="Pig Gateway" type="MavenRunConfiguration" />
+    <toRun name="Pig Business" type="MavenRunConfiguration" />
+    <method v="2" />
+  </configuration>
+</component>

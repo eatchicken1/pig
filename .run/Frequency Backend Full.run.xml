@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Frequency Backend Full" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
+    <toRun name="Pig Auth" type="MavenRunConfiguration" />
+    <toRun name="Pig Upms" type="MavenRunConfiguration" />
+    <toRun name="Pig Gateway" type="MavenRunConfiguration" />
+    <toRun name="Pig Business" type="MavenRunConfiguration" />
+    <toRun name="Pig AI App" type="MavenRunConfiguration" />
+    <toRun name="Pig AI MCP" type="MavenRunConfiguration" />
+    <method v="2" />
+  </configuration>
+</component>
