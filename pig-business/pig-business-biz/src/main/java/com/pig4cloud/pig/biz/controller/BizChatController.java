@@ -33,21 +33,18 @@ public class BizChatController {
 	/**
 	 * 与数字分身流式对话
 	 *
-	 * @param echoId   分身ID
 	 * @param query    用户提问
 	 * @param response HTTP响应对象
 	 */
 	@Operation(summary = "流式对话", description = "SSE流式返回AI回复")
 	@GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public void streamChat(@RequestParam("echoId") String echoId,
-						   @RequestParam("query") String query,
+	public void streamChat(@RequestParam("query") String query,
 						   @RequestParam(value = "conversationId", required = false) String conversationId,
 						   HttpServletResponse response) {
 
 		String finalConversationId = StrUtil.isBlank(conversationId)
 				? String.valueOf(System.currentTimeMillis())
 				: conversationId;
-
 		// 1. 设置标准的 SSE 响应头，防止 Nginx 或浏览器缓存
 		response.setContentType("text/event-stream");
 		response.setCharacterEncoding("UTF-8");
@@ -56,7 +53,7 @@ public class BizChatController {
 		response.setHeader("X-Accel-Buffering", "no"); // 关键：禁用 Nginx 缓冲
 		ByteArrayOutputStream capturedOutput = new ByteArrayOutputStream();
 		// 2. 获取业务流并透传
-		try (InputStream inputStream = chatService.streamChat(echoId, query, finalConversationId);
+		try (InputStream inputStream = chatService.streamChat(query, finalConversationId);
 			 OutputStream outputStream = response.getOutputStream()) {
 
 			byte[] buffer = new byte[1024]; // 缓冲区设小一点，或者直接 byte-by-byte

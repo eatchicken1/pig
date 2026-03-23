@@ -14,7 +14,7 @@ public class ChatRequestDTO {
 	private String userId;
 
 	@JsonProperty("echo_id")
-	private String echoId;
+	private Long echoId;
 
 	private String query;
 

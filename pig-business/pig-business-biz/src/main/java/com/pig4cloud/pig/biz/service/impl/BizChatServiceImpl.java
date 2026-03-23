@@ -31,19 +31,19 @@ public class BizChatServiceImpl implements BizChatService {
 	private final BizEchoProfileService echoProfileService;
 
 	@Override
-	public InputStream streamChat(String echoId, String query, String conversationId) {
+	public InputStream streamChat(String query, String conversationId) {
 		// 1. 获取当前登录用户的 ID (业务逻辑)
 		Long userId = SecurityUtils.getUser().getId();
-		log.info("用户[{}]发起对话请求, echoId={}, query={}", userId, echoId, query);
+		log.info("用户[{}]发起对话请求, echoId={}, query={}", userId, userId, query);
 		saveUserMessage(conversationId, query, userId);
 
 		// ---获取分身人设 ---
 		//TODO: 获取分身人设,后续可做缓存
-		BizEchoProfileEntity profile = echoProfileService.getById(Long.valueOf(echoId));
+		BizEchoProfileEntity profile = echoProfileService.getById(userId);
 
 		// 2. 组装请求参数
 		ChatRequestDTO chatRequest = new ChatRequestDTO();
-		chatRequest.setEchoId(echoId);
+		chatRequest.setEchoId(userId);
 		chatRequest.setQuery(query);
 		chatRequest.setUserId(String.valueOf(userId));
 		if (profile != null) {

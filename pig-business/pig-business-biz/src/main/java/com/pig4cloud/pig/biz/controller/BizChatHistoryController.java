@@ -34,7 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/bizChatHistory" )
 @Tag(description = "bizChatHistory" , name = "对话历史记录表管理" )
-@SecurityRequirement(name = HttpHeaders.AUTHORIZATION)
+//@SecurityRequirement(name = HttpHeaders.AUTHORIZATION)
 public class BizChatHistoryController {
 
     private final  BizChatHistoryService bizChatHistoryService;
@@ -47,7 +47,7 @@ public class BizChatHistoryController {
      */
     @Operation(summary = "分页查询" , description = "分页查询" )
     @GetMapping("/page" )
-    @HasPermission("admin_bizChatHistory_view")
+    //@HasPermission("admin_bizChatHistory_view")
     public R getBizChatHistoryPage(@ParameterObject Page page, @ParameterObject BizChatHistoryEntity bizChatHistory) {
         LambdaQueryWrapper<BizChatHistoryEntity> wrapper = Wrappers.lambdaQuery();
         // 按时间倒序排列，最新的记录先返回
